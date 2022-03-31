@@ -7,6 +7,7 @@
     "node": ">=14.x"
   },
   "scripts": {
+    "prepare": "npm run build",
     "build": "tsc",
     "run-daemon-testnet": "node dist/index.js daemon --testnet --api-key=YOUR_API_KEY --chain=KLAY"
   },
