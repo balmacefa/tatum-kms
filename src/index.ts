@@ -87,8 +87,9 @@ const startup = async () => {
     }
     switch (command[0]) {
         case 'daemon':
+            let pwd = flags.pwd? flags.pwd: "";
             getTatumKey(flags.apiKey as string)
-            await processSignatures(flags.pwd ? flags.pwd : "", flags.testnet, flags.period, axiosInstance, flags.path, flags.chain?.split(',') as Currency[], flags.externalUrl);
+            await processSignatures(pwd , flags.testnet, flags.period, axiosInstance, flags.path, flags.chain?.split(',') as Currency[]);
             break;
         case 'generatewallet':
             console.log(JSON.stringify(await generateWallet(command[1] as Currency, flags.testnet), null, 2));
