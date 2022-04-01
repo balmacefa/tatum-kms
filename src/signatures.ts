@@ -5,7 +5,6 @@ import {
     bnbBroadcast,
     bscBroadcast,
     btcBroadcast,
-    celoBroadcast,
     Currency,
     dogeBroadcast,
     egldBroadcast,
@@ -27,7 +26,6 @@ import {
     signBitcoinOffchainKMSTransaction,
     signBnbKMSTransaction,
     signBscKMSTransaction,
-    signCeloKMSTransaction,
     signDogecoinKMSTransaction,
     signDogecoinOffchainKMSTransaction,
     signEgldKMSTransaction,
@@ -248,21 +246,6 @@ const processTransaction = async (
                 return;
             }
             break;
-        case Currency.CELO:
-            const celoPrivateKey =
-                wallets[0].mnemonic && transaction.index !== undefined
-                    ? await generatePrivateKeyFromMnemonic(
-                        Currency.CELO,
-                        wallets[0].testnet,
-                        wallets[0].mnemonic,
-                        transaction.index
-                    )
-                    : wallets[0].privateKey;
-            await celoBroadcast(
-                await signCeloKMSTransaction(transaction, celoPrivateKey, testnet),
-                transaction.id
-            );
-            return;
         case Currency.BSC:
             const bscPrivateKey =
                 wallets[0].mnemonic && transaction.index !== undefined
@@ -482,7 +465,6 @@ export const processSignatures = async (
         Currency.KLAY,
         Currency.LTC,
         Currency.DOGE,
-        Currency.CELO,
         Currency.BSC,
         Currency.SOL,
         Currency.TRON,
