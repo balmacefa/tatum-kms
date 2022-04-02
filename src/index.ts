@@ -89,7 +89,10 @@ const startup = async () => {
         case 'daemon':
             let pwd = flags.pwd? flags.pwd: "";
             getTatumKey(flags.apiKey as string)
-            await processSignatures(pwd , flags.testnet, flags.period, axiosInstance, flags.path, flags.chain?.split(',') as Currency[]);
+            // flags.path is relative to the current working directory
+            const absolutePath = `${process.cwd()}/${flags.path}`;
+            console.log(absolutePath);
+            await processSignatures(pwd , flags.testnet, flags.period, axiosInstance, absolutePath, flags.chain?.split(',') as Currency[]);
             break;
         case 'generatewallet':
             console.log(JSON.stringify(await generateWallet(command[1] as Currency, flags.testnet), null, 2));
