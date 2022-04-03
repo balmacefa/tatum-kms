@@ -78,7 +78,6 @@ const { input: command, flags } = meow(`
         },
         externalUrl: {
             type: 'string',
-            isRequired: (flags, input) => input[0] === 'daemon' && !flags.testnet
         }
     }
 });
@@ -135,7 +134,10 @@ const startup = async () => {
         case 'daemon':
             const daemonPwd = await getPwd(getPwdSource());
             getTatumKey(flags.apiKey as string)
-            await processSignaturesAsDaemon(daemonPwd, flags.testnet, flags.period, axiosInstance, flags.path, flags.chain?.split(',') as Currency[], flags.externalUrl);
+            const absolutePath = `${process.cwd()}/${flags.path}`;
+            console.log(absolutePath);
+
+            await processSignaturesAsDaemon(daemonPwd, flags.testnet, flags.period, axiosInstance, absolutePath, flags.chain?.split(',') as Currency[], flags.externalUrl);
             break;
         case 'processsignatures':
             const adHockPwd = await getPwd(getPwdSource());
