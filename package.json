@@ -9,7 +9,9 @@
   "scripts": {
     "prepare": "npm run build",
     "build": "tsc",
-    "run-daemon-testnet": "node dist/index.js daemon --testnet --api-key=YOUR_API_KEY --chain=KLAY"
+    "rum": "node dist/index.js",
+    "run-daemon-testnet": "node dist/index.js daemon --testnet --api-key=YOUR_API_KEY --chain=KLAY",
+    "changepwd": "node dist/index.js changepwd --newpwd=$NEWPWD -pwd=$OLDPWD --path=/home/balmacefa/Documents/blockchain/Criptok/criptok_backend/tatum_kms/wallet_test.dat"
   },
   "files": [
     "dist/"

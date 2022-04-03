@@ -12,7 +12,8 @@ import {
     storePrivateKey,
     storeWallet,
     getTatumKey,
-    getQuestion
+    getQuestion,
+    changePassword
 } from './management';
 import { processSignatures } from './signatures';
 import http from 'http';
@@ -59,6 +60,9 @@ const { input: command, flags } = meow(`
         pwd: {
             type: 'string',
         },
+        newpwd: {
+            type: 'string',
+        },
         chain: {
             type: 'string',
         },
@@ -93,6 +97,10 @@ const startup = async () => {
             const absolutePath = `${process.cwd()}/${flags.path}`;
             console.log(absolutePath);
             await processSignatures(pwd , flags.testnet, flags.period, axiosInstance, absolutePath, flags.chain?.split(',') as Currency[]);
+            break;
+            case 'changepwd':
+            // changePassword = (path: string, newPassword: string, oldPassword: string)
+            await changePassword(flags.path?flags.path:'' , flags.newpwd?flags.newpwd:"", flags.pwd?flags.pwd:"");
             break;
         case 'generatewallet':
             console.log(JSON.stringify(await generateWallet(command[1] as Currency, flags.testnet), null, 2));

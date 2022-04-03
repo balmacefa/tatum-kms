@@ -500,15 +500,7 @@ export const processSignatures = async (
         }
         const data = [];
         for (const transaction of transactions) {
-            try {
-                await processTransaction(transaction, testnet, pwd, axios, path, externalUrl);
-            } catch (e) {
-                const msg = e.response
-                    ? JSON.stringify(e.response.data, null, 2)
-                    : `${e}`;
-                data.push({signatureId: transaction.id, error: msg});
-                console.error(`${new Date().toISOString()} - Could not process transaction id ${transaction.id}, error: ${msg}`);
-            }
+            await newFunction(transaction);
         }
         if (data.length > 0) {
             try {
@@ -525,5 +517,17 @@ export const processSignatures = async (
             }
         }
         running = false;
+
+        async function newFunction(transaction: TransactionKMS) {
+            try {
+                await processTransaction(transaction, testnet, pwd, axios, path, externalUrl);
+            } catch (e) {
+                const msg = e.response
+                    ? JSON.stringify(e.response.data, null, 2)
+                    : `${e}`;
+                data.push({ signatureId: transaction.id, error: msg });
+                console.error(`${new Date().toISOString()} - Could not process transaction id ${transaction.id}, error: ${msg}`);
+            }
+        }
     }, period * 1000);
 };

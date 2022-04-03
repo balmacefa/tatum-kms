@@ -30,8 +30,9 @@ export const exportWallets = (path?: string) => {
         console.error(JSON.stringify({error: `No such wallet file.`}, null, 2));
         return;
     }
-    console.log(JSON.stringify(JSON.parse(AES.decrypt(data, pwd).toString(enc.Utf8)), null, 2));
+    console.log(JSON.stringify(JSON.parse(decoWallet(data, pwd)), null, 2));
 };
+
 
 export const getManagedWallets = (pwd: string, chain: string, testnet: boolean, path?: string) => {
     const pathToWallet = path || homedir() + '/.tatumrc/wallet.dat';
@@ -43,7 +44,7 @@ export const getManagedWallets = (pwd: string, chain: string, testnet: boolean, 
     if (!data?.length) {
         return [];
     }
-    const wallets = JSON.parse(AES.decrypt(data, pwd).toString(enc.Utf8));
+    const wallets = JSON.parse(decoWallet(data, pwd));
     const keys = [];
     for (const walletsKey in wallets) {
         if (chain === wallets[walletsKey].chain && testnet === wallets[walletsKey].testnet) {
@@ -75,7 +76,7 @@ export const storeWallet = async (chain: Currency, testnet: boolean, path?: stri
         const data = readFileSync(pathToWallet, { encoding: 'utf8' });
         let walletData = entry;
         if (data?.length > 0) {
-            walletData = { ...walletData, ...JSON.parse(AES.decrypt(data, pwd).toString(enc.Utf8)) };
+            walletData = { ...walletData, ...JSON.parse(decoWallet(data, pwd)) };
         }
         writeFileSync(pathToWallet, AES.encrypt(JSON.stringify(walletData), pwd).toString());
     }
@@ -101,7 +102,7 @@ export const storePrivateKey = async (chain: Currency, testnet: boolean, private
         const data = readFileSync(pathToWallet, { encoding: 'utf8' });
         let walletData = entry;
         if (data?.length > 0) {
-            walletData = { ...walletData, ...JSON.parse(AES.decrypt(data, pwd).toString(enc.Utf8)) };
+            walletData = { ...walletData, ...JSON.parse(decoWallet(data, pwd)) };
         }
         writeFileSync(pathToWallet, AES.encrypt(JSON.stringify(walletData), pwd).toString());
     }
@@ -148,7 +149,7 @@ export const getPrivateKey = async (id: string, index: string, path?: string) =>
         console.error(JSON.stringify({ error: `No such wallet for signatureId '${id}'.` }, null, 2));
         return;
     }
-    const wallet = JSON.parse(AES.decrypt(data, pwd).toString(enc.Utf8));
+    const wallet = decoWallet(data, pwd);
     if (!wallet[id]) {
         console.error(JSON.stringify({ error: `No such wallet for signatureId '${id}'.` }, null, 2));
         return;
@@ -171,7 +172,7 @@ export const getAddress = async (id: string, index: string, path?: string) => {
         console.error(JSON.stringify({ error: `No such wallet for signatureId '${id}'.` }, null, 2));
         return;
     }
-    const wallet = JSON.parse(AES.decrypt(data, pwd).toString(enc.Utf8));
+    const wallet = JSON.parse(decoWallet(data, pwd));
     if (!wallet[id]) {
         console.error(JSON.stringify({ error: `No such wallet for signatureId '${id}'.` }, null, 2));
         return;
@@ -192,9 +193,32 @@ export const removeWallet = async (id: string, path?: string) => {
         console.error(JSON.stringify({ error: `No such wallet for signatureId '${id}'.` }, null, 2));
         return;
     }
-    const wallet = JSON.parse(AES.decrypt(data, pwd).toString(enc.Utf8));
+    const wallet = JSON.parse(decoWallet(data, pwd));
     delete wallet[id];
     writeFileSync(pathToWallet, AES.encrypt(JSON.stringify(wallet), pwd).toString());
+};
+
+
+function decoWallet(data: string, pwd: string) {
+
+    let decData = enc.Base64.parse(data).toString(enc.Utf8)
+    let bytes = AES.decrypt(decData, pwd).toString(enc.Utf8)
+    return JSON.parse(bytes)
+}
+
+export const changePassword = (path: string, newPassword: string, oldPassword: string) => {
+    const pathToWallet = path || homedir() + '/.tatumrc/wallet.dat';
+    if (!existsSync(pathToWallet)) {
+        console.error(JSON.stringify({ error: `No such wallet.` }, null, 2));
+        return;
+    }
+    const data = readFileSync(pathToWallet, { encoding: 'utf8' });
+    if (!data?.length) {
+        console.error(JSON.stringify({ error: `No such wallet.` }, null, 2));
+        return;
+    }
+    const wallet = decoWallet(data, oldPassword);
+    writeFileSync(pathToWallet, AES.encrypt(JSON.stringify(wallet), newPassword).toString());
 };
 
 export const getTatumKey = (apiKey: string) => {
@@ -210,4 +234,5 @@ export const getQuestion = (q: string, e?: string) => {
     return question(q, {
         hideEchoBack: true,
     });
-}
+
+};
