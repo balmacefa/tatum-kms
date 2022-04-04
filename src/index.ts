@@ -135,8 +135,6 @@ const startup = async () => {
             const daemonPwd = await getPwd(getPwdSource());
             getTatumKey(flags.apiKey as string)
             const absolutePath = `${process.cwd()}/${flags.path}`;
-            console.log(absolutePath);
-
             await processSignaturesAsDaemon(daemonPwd, flags.testnet, flags.period, axiosInstance, absolutePath, flags.chain?.split(',') as Currency[], flags.externalUrl);
             break;
         case 'processsignatures':

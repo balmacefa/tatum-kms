@@ -506,9 +506,9 @@ export const processSignatures = async (
     for (const supportedChain of supportedChains) {
         try {
             const wallets = getManagedWallets(pwd, supportedChain, testnet, path).join(',');
-            console.log(
-                `${new Date().toISOString()} - Getting pending transaction from ${supportedChain} for wallets ${wallets}.`
-            );
+            // console.log(
+            //     `${new Date().toISOString()} - Getting pending transaction from ${supportedChain} for wallets ${wallets}.`
+            // );
             transactions.push(
                 ...(await getPendingTransactionsKMSByChain(supportedChain, wallets))
             );
